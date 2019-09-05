@@ -63,7 +63,7 @@ BUILD_DIR := ./build
 # Current version of the project.
 VERSION ?= $(shell git describe --tags --always --dirty)
 
-# Available cpus for compiling
+# Available cpus for compiling, please refer to https://github.com/caicloud/engineering/issues/8186#issuecomment-518656946 for more information.
 CPUS_AVAILABLE ?= $(shell sh hack/read_cpus_available.sh)
 
 # Track code version with Docker Label.
