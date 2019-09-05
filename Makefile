@@ -63,6 +63,9 @@ BUILD_DIR := ./build
 # Current version of the project.
 VERSION ?= $(shell git describe --tags --always --dirty)
 
+# Available cpus for compiling
+CPUS_AVAILABLE ?= $(shell sh hack/read_cpus_available.sh)
+
 # Track code version with Docker Label.
 DOCKER_LABELS ?= git-describe="$(shell date -u +v%Y%m%d)-$(shell git describe --tags --always --dirty)"
 
@@ -92,7 +95,7 @@ test:
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  go build -i -v -o $(OUTPUT_DIR)/$${target}                                       \
+	  go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS_AVAILABLE)                  \
 	  -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                        \
 	    -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                       \
 	  $(CMD_DIR)/$${target};                                                           \
@@ -107,7 +110,7 @@ build-linux:
 	    -e GOARCH=amd64                                                                \
 	    -e GOPATH=/go                                                                  \
 	    $(BASE_REGISTRY)/golang:1.12.9-stretch                                         \
-	      go build -i -v -o $(OUTPUT_DIR)/$${target}                                   \
+	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS_AVAILABLE)              \
 	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
 	          -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                 \
 	        $(CMD_DIR)/$${target};                                                     \
