@@ -56,7 +56,6 @@ Below we describe the conventions or tools specific to golang project.
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── .gitignore
 ├── .golangci.yml
-├── .pre-commit-config.yaml
 ├── CHANGELOG.md
 ├── Makefile
 ├── OWNERS
@@ -100,7 +99,6 @@ A brief description of the layout:
 * `.github` has two template files for creating PR and issue. Please see the files for more details.
 * `.gitignore` varies per project, but all projects need to ignore `bin` directory.
 * `.golangci.yml` is the golangci-lint config file.
-* `.pre-commit-config.yaml` is for configuring [pre-commit](https://pre-commit.com/).
 * `Makefile` is used to build the project. **You need to tweak the variables based on your project**.
 * `CHANGELOG.md` contains auto-generated changelog information.
 * `CODEOWNERS` contains owners of the project.
@@ -123,7 +121,6 @@ A brief description of the layout:
 * `cmd` and `build` **MUST** have the same set of subdirectories for main targets
   * For example, `cmd/admin,cmd/controller` and `build/admin,build/controller`.
   * Dockerfile **MUST** be put under `build` directory even if you have only one Dockerfile.
-* Upon checking out, you should install [pre-commit](https://pre-commit.com/) hook by running `pre-commit install -t pre-push`.
 
 ## TODO
 
