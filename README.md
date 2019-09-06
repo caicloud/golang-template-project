@@ -11,7 +11,6 @@
   - [Getting started](#getting-started)
     - [Layout](#layout)
   - [Notes](#notes)
-  - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -50,7 +49,7 @@ Below we describe the conventions or tools specific to golang project.
 
 ### Layout
 
-```
+```tree
 ├── .github
 │   ├── ISSUE_TEMPLATE.md
 │   └── PULL_REQUEST_TEMPLATE.md
@@ -77,6 +76,9 @@ Below we describe the conventions or tools specific to golang project.
 │   ├── deployment.yaml
 │   └── script.sh
 ├── pkg
+│   ├── apis
+│   │   └── v1
+│   │       └── README.md
 │   ├── utils
 │   │   └── net
 │   │       └── net.go
@@ -101,14 +103,14 @@ A brief description of the layout:
 * `.golangci.yml` is the golangci-lint config file.
 * `Makefile` is used to build the project. **You need to tweak the variables based on your project**.
 * `CHANGELOG.md` contains auto-generated changelog information.
-* `CODEOWNERS` contains owners of the project.
+* `OWNERS` contains owners of the project.
 * `README.md` is a detailed description of the project.
 * `bin` is to hold build outputs.
 * `cmd` contains main packages, each subdirecoty of `cmd` is a main package.
 * `build` contains scripts, yaml files, dockerfiles, etc, to build and package the project.
 * `docs` for project documentations.
 * `hack` contains scripts used to manage this repository, e.g. codegen, installation, verification, etc.
-* `pkg` places most of project business logic.
+* `pkg` places most of project business logic and locate `api` package.
 * `release` [chart](https://github.com/caicloud/charts) for production deployment.
 * `test` holds all tests (except unit tests), e.g. integration, e2e tests.
 * `third_party` for all third party libraries and tools, e.g. swagger ui, protocol buf, etc.
@@ -121,7 +123,3 @@ A brief description of the layout:
 * `cmd` and `build` **MUST** have the same set of subdirectories for main targets
   * For example, `cmd/admin,cmd/controller` and `build/admin,build/controller`.
   * Dockerfile **MUST** be put under `build` directory even if you have only one Dockerfile.
-
-## TODO
-
-* Define where to locate `api` package.
