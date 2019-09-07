@@ -6,6 +6,6 @@ FROM cargo.caicloud.xyz/library/debian:stretch
 
 LABEL maintainer="Deyuan Deng <deyuan@caicloud.io>"
 
-ADD bin/controller /controller
+ADD bin/controller /usr/local/bin
 
-CMD ["/controller"]
+CMD ["controller"]

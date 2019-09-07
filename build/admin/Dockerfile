@@ -6,6 +6,6 @@ FROM cargo.caicloud.xyz/library/debian:stretch
 
 LABEL maintainer="Deyuan Deng <deyuan@caicloud.io>"
 
-ADD bin/admin /admin
+ADD bin/admin /usr/local/bin
 
-ENTRYPOINT ["/admin"]
+ENTRYPOINT ["admin"]
