@@ -4,16 +4,16 @@
 # to allow building multiple binaries. You are free to add more targets or change
 # existing implementations, as long as the semantics are preserved.
 #
-#   make        - default to 'build' target
-#   make lint   - code analysis
-#   make test   - run unit test (or plus integration test)
+#   make              - default to 'build' target
+#   make lint         - code analysis
+#   make test         - run unit test (or plus integration test)
 #   make build        - alias to build-local target
 #   make build-local  - build local binary targets
 #   make build-linux  - build linux binary targets
 #   make container    - build containers
 #   $ docker login registry -u username -p xxxxx
-#   make push    - push containers
-#   make clean   - clean up targets
+#   make push         - push containers
+#   make clean        - clean up targets
 #
 # Not included but recommended targets:
 #   make e2e-test
