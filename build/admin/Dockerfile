@@ -1,11 +1,5 @@
-#
-# Copyright 2017 The Caicloud Authors.
-#
-
 FROM cargo.caicloud.xyz/library/debian:stretch
 
-LABEL maintainer="Deyuan Deng <deyuan@caicloud.io>"
+ADD bin/admin /usr/local/bin
 
-ADD bin/admin /admin
-
-ENTRYPOINT ["/admin"]
+ENTRYPOINT ["admin"]
