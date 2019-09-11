@@ -70,6 +70,7 @@ CPUS ?= $(shell sh hack/read_cpus_available.sh)
 DOCKER_LABELS ?= git-describe="$(shell date -u +v%Y%m%d)-$(shell git describe --tags --always --dirty)"
 
 # Golang standard bin directory.
+GOPATH ?= $(shell go env GOPATH)
 BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
