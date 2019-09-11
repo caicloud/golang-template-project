@@ -61,7 +61,11 @@ OUTPUT_DIR := ./bin
 BUILD_DIR := ./build
 
 # Current version of the project.
-VERSION ?= $(shell git describe --tags --always --dirty)
+VERSION      ?= $(shell git describe --tags --always --dirty)
+GITREMOTE    ?= $(shell git remote get-url origin)
+GITCOMMIT    ?= $(shell git rev-parse HEAD)
+GITTREESTATE ?= $(if $(shell git status --porcelain),dirty,clean)
+BUILDDATE    ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Available cpus for compiling, please refer to https://github.com/caicloud/engineering/issues/8186#issuecomment-518656946 for more information.
 CPUS ?= $(shell sh hack/read_cpus_available.sh)
@@ -96,8 +100,11 @@ test:
 build-local:
 	@for target in $(TARGETS); do                                                      \
 	  go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                            \
-	  -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                        \
-	    -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                       \
+	  -ldflags "-s -w -X $(ROOT)/pkg/version.version=$(VERSION)                        \
+		-X $(ROOT)/pkg/version.gitRemote=$(GITREMOTE)                                  \
+	    -X $(ROOT)/pkg/version.gitCommit=$(GITCOMMIT)                                  \
+	    -X $(ROOT)/pkg/version.gitTreeState=$(GITTREESTATE)                            \
+	    -X $(ROOT)/pkg/version.buildDate=$(BUILDDATE)"                                 \
 	  $(CMD_DIR)/$${target};                                                           \
 	done
 
@@ -111,8 +118,11 @@ build-linux:
 	    -e GOPATH=/go                                                                  \
 	    $(BASE_REGISTRY)/golang:1.12.9-stretch                                         \
 	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                        \
-	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
-	          -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                 \
+	        -ldflags "-s -w -X $(ROOT)/pkg/version.version=$(VERSION)                  \
+			  -X $(ROOT)/pkg/version.gitRemote=$(GITREMOTE)                            \
+			  -X $(ROOT)/pkg/version.gitCommit=$(GITCOMMIT)                            \
+			  -X $(ROOT)/pkg/version.gitTreeState=$(GITTREESTATE)                      \
+	    	  -X $(ROOT)/pkg/version.buildDate=$(BUILDDATE)"                           \
 	        $(CMD_DIR)/$${target};                                                     \
 	done
 

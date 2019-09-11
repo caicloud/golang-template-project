@@ -13,8 +13,7 @@ import (
 
 func main() {
 	fmt.Println("Hello world admin")
-	fmt.Printf("version '%v', commit '%v', repo root '%v'\n",
-		version.VERSION, version.COMMIT, version.REPOROOT)
+	fmt.Printf("XXX build information: %v\n", version.Get().Pretty())
 
 	net.Helper()
 }
