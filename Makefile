@@ -103,19 +103,19 @@ build-local:
 	done
 
 build-linux:
-	@for target in $(TARGETS); do                                                      \
-	  docker run --rm                                                                  \
-	    -v $(PWD):/go/src/$(ROOT)                                                      \
-	    -w /go/src/$(ROOT)                                                             \
-	    -e GOOS=linux                                                                  \
-	    -e GOARCH=amd64                                                                \
-	    -e GOPATH=/go                                                                  \
-	    $(BASE_REGISTRY)/golang:1.12.9-stretch                                         \
+	@docker run --rm                                                                   \
+	  -v $(PWD):/go/src/$(ROOT)                                                        \
+	  -w /go/src/$(ROOT)                                                               \
+	  -e GOOS=linux                                                                    \
+	  -e GOARCH=amd64                                                                  \
+	  -e GOPATH=/go                                                                    \
+	  $(BASE_REGISTRY)/golang:1.12.9-stretch                                           \
+	    /bin/bash -c 'for target in $(TARGETS); do                                     \
 	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                        \
 	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
 	          -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                 \
 	        $(CMD_DIR)/$${target};                                                     \
-	done
+	    done'
 
 container: build-linux
 	@for target in $(TARGETS); do                                                      \
