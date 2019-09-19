@@ -119,11 +119,11 @@ build-linux:
 	    -e GOPATH=/go                                                                  \
 	    $(BASE_REGISTRY)/golang:1.12.9-stretch                                         \
 	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                        \
-	        -ldflags "-s -w -X $(ROOT)/pkg/version.version=$(VERSION)                  \
-			  -X $(ROOT)/pkg/version.gitRemote=$(GITREMOTE)                            \
-			  -X $(ROOT)/pkg/version.gitCommit=$(GITCOMMIT)                            \
-			  -X $(ROOT)/pkg/version.gitTreeState=$(GITTREESTATE)                      \
-	    	  -X $(ROOT)/pkg/version.buildDate=$(BUILDDATE)"                           \
+	        -ldflags "-s -w -X $(GOCOMMON)/version.version=$(VERSION)                  \
+			  -X $(GOCOMMON)/version.gitRemote=$(GITREMOTE)                            \
+			  -X $(GOCOMMON)/version.gitCommit=$(GITCOMMIT)                            \
+			  -X $(GOCOMMON)/version.gitTreeState=$(GITTREESTATE)                      \
+	    	  -X $(GOCOMMON)/version.buildDate=$(BUILDDATE)"                           \
 	        $(CMD_DIR)/$${target};                                                     \
 	done
 
