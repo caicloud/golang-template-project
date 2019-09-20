@@ -1,5 +1,5 @@
 FROM cargo.caicloud.xyz/library/debian:stretch
 
-ADD bin/controller /usr/local/bin
+COPY bin/controller /usr/local/bin/template-controller
 
-CMD ["controller"]
+CMD ["template-controller"]

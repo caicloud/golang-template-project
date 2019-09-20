@@ -1,5 +1,5 @@
 FROM cargo.caicloud.xyz/library/debian:stretch
 
-ADD bin/admin /usr/local/bin
+COPY bin/admin /usr/local/bin/template-admin
 
-ENTRYPOINT ["admin"]
+ENTRYPOINT ["template-admin"]
