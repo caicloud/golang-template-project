@@ -49,7 +49,10 @@ BASE_REGISTRY ?= cargo.caicloud.xyz/library
 #
 
 # It's necessary to set this because some environments don't link sh -> bash.
-SHELL := /bin/bash
+export SHELL := /bin/bash
+
+# It's necessary to set the errexit flags for the bash shell.
+export SHELLOPTS := errexit
 
 # Project main package location (can be multiple ones).
 CMD_DIR := ./cmd
@@ -109,6 +112,7 @@ build-linux:
 	  -e GOOS=linux                                                                    \
 	  -e GOARCH=amd64                                                                  \
 	  -e GOPATH=/go                                                                    \
+	  -e SHELLOPTS=$(SHELLOPTS)                                                        \
 	  $(BASE_REGISTRY)/golang:1.12.9-stretch                                           \
 	    /bin/bash -c 'for target in $(TARGETS); do                                     \
 	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                        \
