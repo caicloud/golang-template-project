@@ -26,85 +26,94 @@
 #
 
 # This repo's root import path (under GOPATH).
-ROOT := github.com/caicloud/golang-template-project
+ROOT             := github.com/caicloud/golang-template-project
 
 # Target binaries. You can build multiple binaries for a single project.
-TARGETS := admin controller
+TARGETS          := $(patsubst cmd/%,%,$(wildcard cmd/*))
 
 # Container image prefix and suffix added to targets.
 # The final built images are:
 #   $[REGISTRY]/$[IMAGE_PREFIX]$[TARGET]$[IMAGE_SUFFIX]:$[VERSION]
 # $[REGISTRY] is an item from $[REGISTRIES], $[TARGET] is an item from $[TARGETS].
-IMAGE_PREFIX ?= $(strip template-)
-IMAGE_SUFFIX ?= $(strip )
+IMAGE_PREFIX     ?= $(strip template-)
+IMAGE_SUFFIX     ?= $(strip )
 
 # Container registries.
-REGISTRY ?= cargo.dev.caicloud.xyz/release
+REGISTRY         ?= cargo.dev.caicloud.xyz/release
 
 # Container registry for base images.
-BASE_REGISTRY ?= cargo.caicloud.xyz/library
+BASE_REGISTRY    ?= cargo.caicloud.xyz/library
 
 #
 # These variables should not need tweaking.
 #
 
 # It's necessary to set this because some environments don't link sh -> bash.
-export SHELL := /bin/bash
+export SHELL     := /bin/bash
 
 # It's necessary to set the errexit flags for the bash shell.
 export SHELLOPTS := errexit
 
 # Project main package location (can be multiple ones).
-CMD_DIR := ./cmd
+CMD_DIR          := ./cmd
 
 # Project output directory.
-OUTPUT_DIR := ./bin
+OUTPUT_DIR       := ./bin
 
 # Build direcotory.
-BUILD_DIR := ./build
+BUILD_DIR        := ./build
 
 # Current version of the project.
-VERSION ?= $(shell git describe --tags --always --dirty)
+VERSION          ?= $(shell git describe --tags --always --dirty)
 
 # Available cpus for compiling, please refer to https://github.com/caicloud/engineering/issues/8186#issuecomment-518656946 for more information.
-CPUS ?= $(shell /bin/bash hack/read_cpus_available.sh)
+CPUS             ?= $(shell /bin/bash hack/read_cpus_available.sh)
 
 # Track code version with Docker Label.
-DOCKER_LABELS ?= git-describe="$(shell date -u +v%Y%m%d)-$(shell git describe --tags --always --dirty)"
+DOCKER_LABELS    ?= git-describe="$(shell date -u +v%Y%m%d)-$(shell git describe --tags --always --dirty)"
 
 # Golang standard bin directory.
-GOPATH ?= $(shell go env GOPATH)
-BIN_DIR := $(GOPATH)/bin
-GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
+GOPATH           ?= $(shell go env GOPATH)
+BIN_DIR          := $(GOPATH)/bin
+GOLANGCI_LINT    := $(BIN_DIR)/golangci-lint
+
+ifeq ($(OS),Windows_NT)
+    OSName       ?= windows
+else
+    OSName       ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
+endif
 
 #
 # Define all targets. At least the following commands are required:
 #
 
-# All targets.
-.PHONY: lint test build container push
-
+.PHONY: build
 build: build-local
 
 # more info about `GOGC` env: https://github.com/golangci/golangci-lint#memory-usage-of-golangci-lint
+.PHONY: lint
 lint: $(GOLANGCI_LINT)
 	@GOGC=5 $(GOLANGCI_LINT) run
 
+.PHONY: $(GOLANGCI_LINT)
 $(GOLANGCI_LINT):
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.16.0
 
+.PHONY: test
 test:
 	@go test -p $(CPUS) $$(go list ./... | grep -v /vendor | grep -v /test) -coverprofile=coverage.out
 	@go tool cover -func coverage.out | tail -n 1 | awk '{ print "Total coverage: " $$3 }'
 
+.PHONY: build-local
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                            \
+	  env GOOS=$(OSName) go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)         \
 	  -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                        \
 	    -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                       \
 	  $(CMD_DIR)/$${target};                                                           \
 	done
 
+.PHONY: build-linux
 build-linux:
 	@docker run --rm -t                                                                \
 	  -v $(PWD):/go/src/$(ROOT)                                                        \
@@ -121,6 +130,7 @@ build-linux:
 	        $(CMD_DIR)/$${target};                                                     \
 	    done'
 
+.PHONY: container
 container: build-linux
 	@for target in $(TARGETS); do                                                      \
 	  image=$(IMAGE_PREFIX)$${target}$(IMAGE_SUFFIX);                                  \
@@ -129,6 +139,7 @@ container: build-linux
 	    -f $(BUILD_DIR)/$${target}/Dockerfile .;                                       \
 	done
 
+.PHONY: push
 push: container
 	@for target in $(TARGETS); do                                                      \
 	  image=$(IMAGE_PREFIX)$${target}$(IMAGE_SUFFIX);                                  \
@@ -137,4 +148,4 @@ push: container
 
 .PHONY: clean
 clean:
-	@-rm -vrf ${OUTPUT_DIR}
+	@$(RM) -vr ${OUTPUT_DIR}
