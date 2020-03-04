@@ -73,6 +73,7 @@ CPUS ?= $(shell /bin/bash hack/read_cpus_available.sh)
 DOCKER_LABELS ?= git-describe="$(shell date -u +v%Y%m%d)-$(shell git describe --tags --always --dirty)"
 
 # This will force go to use the vendor files instead of using the `$GOPATH/pkg/mod`. (vendor mode)
+# more info: https://github.com/golang/go/wiki/Modules#how-do-i-use-vendoring-with-modules-is-vendoring-going-away
 export GOFLAGS := -mod=vendor
 
 # Golang standard bin directory.
