@@ -77,6 +77,13 @@ GOPATH ?= $(shell go env GOPATH)
 BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
+# Default golang flags used in build and test
+# -mod=vendor: force go to use the vendor files instead of using the `$GOPATH/pkg/mod`
+# -p: the number of programs that can be run in parallel
+# -race: enable data race detection
+# -count: run each test and benchmark 1 times. Set this flag to disable test cache
+export GOFLAGS ?= -mod=vendor -p=$(CPUS) -race -count=1
+
 #
 # Define all targets. At least the following commands are required:
 #
@@ -91,18 +98,18 @@ lint: $(GOLANGCI_LINT)
 	@$(GOLANGCI_LINT) run
 
 $(GOLANGCI_LINT):
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.20.1
+	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.23.6
 
 test:
-	@go test -p $(CPUS) $$(go list ./... | grep -v /vendor | grep -v /test) -coverprofile=coverage.out
+	@go test -coverprofile=coverage.out ./...
 	@go tool cover -func coverage.out | tail -n 1 | awk '{ print "Total coverage: " $$3 }'
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                            \
-	  -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                        \
-	    -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                       \
-	  $(CMD_DIR)/$${target};                                                           \
+	  go build -v -o $(OUTPUT_DIR)/$${target}                                          \
+	    -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                      \
+	      -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                     \
+	    $(CMD_DIR)/$${target};                                                         \
 	done
 
 build-linux:
@@ -112,10 +119,11 @@ build-linux:
 	  -e GOOS=linux                                                                    \
 	  -e GOARCH=amd64                                                                  \
 	  -e GOPATH=/go                                                                    \
-	  -e SHELLOPTS=$(SHELLOPTS)                                                        \
-	  $(BASE_REGISTRY)/golang:1.12.12-stretch                                          \
+	  -e GOFLAGS="$(GOFLAGS)"                                                          \
+	  -e SHELLOPTS="$(SHELLOPTS)"                                                      \
+	  $(BASE_REGISTRY)/golang:1.13.6-stretch                                           \
 	    /bin/bash -c 'for target in $(TARGETS); do                                     \
-	      go build -i -v -o $(OUTPUT_DIR)/$${target} -p $(CPUS)                        \
+	      go build -v -o $(OUTPUT_DIR)/$${target}                                      \
 	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
 	          -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                 \
 	        $(CMD_DIR)/$${target};                                                     \
