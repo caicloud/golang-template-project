@@ -121,7 +121,7 @@ build-linux:
 	  -e GOPATH=/go                                                                    \
 	  -e GOFLAGS="$(GOFLAGS)"                                                          \
 	  -e SHELLOPTS="$(SHELLOPTS)"                                                      \
-	  $(BASE_REGISTRY)/golang:1.13.6-stretch                                           \
+	  $(BASE_REGISTRY)/golang:1.13.9-stretch                                           \
 	    /bin/bash -c 'for target in $(TARGETS); do                                     \
 	      go build -v -o $(OUTPUT_DIR)/$${target}                                      \
 	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
