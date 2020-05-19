@@ -113,7 +113,7 @@ build-local:
 	done
 
 build-linux:
-	@docker run --rm -t                                                                \
+	@docker run --rm -it                                                               \
 	  -v $(PWD):/go/src/$(ROOT)                                                        \
 	  -w /go/src/$(ROOT)                                                               \
 	  -e GOOS=linux                                                                    \
