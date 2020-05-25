@@ -8,13 +8,13 @@ import (
 	"fmt"
 
 	"github.com/caicloud/golang-template-project/pkg/utils/net"
-	"github.com/caicloud/golang-template-project/pkg/version"
+
+	"github.com/caicloud/go-common/version"
 )
 
 func main() {
 	fmt.Println("Hello world admin")
-	fmt.Printf("version '%v', commit '%v', repo root '%v'\n",
-		version.VERSION, version.COMMIT, version.REPOROOT)
+	fmt.Printf("go-common build information: %v\n", version.Get().Pretty())
 
 	net.Helper()
 }
