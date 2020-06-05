@@ -106,12 +106,12 @@ $(GOLANGCI_LINT):
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.23.6
 
 test:
-	@go test -coverprofile=coverage.out ./...
+	@go test -race -coverprofile=coverage.out ./...
 	@go tool cover -func coverage.out | tail -n 1 | awk '{ print "Total coverage: " $$3 }'
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  go build -v -o $(OUTPUT_DIR)/$${target}                                          \
+	  go build -race -v -o $(OUTPUT_DIR)/$${target}                                    \
 	    -ldflags "-s -w -X $(GOCOMMON)/version.version=$(VERSION)                      \
 	      -X $(GOCOMMON)/version.gitRemote=$(GITREMOTE)                                \
 	      -X $(GOCOMMON)/version.gitCommit=$(GITCOMMIT)                                \
