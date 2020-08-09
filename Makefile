@@ -64,12 +64,7 @@ OUTPUT_DIR := ./bin
 BUILD_DIR := ./build
 
 # Current version of the project.
-VERSION      ?= $(shell git describe --tags --always --dirty)
-GITREMOTE    ?= $(shell git remote get-url origin)
-GITCOMMIT    ?= $(shell git rev-parse HEAD)
-GITTREESTATE ?= $(if $(shell git status --porcelain),dirty,clean)
-BUILDDATE    ?= $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-GOCOMMON     := $(shell if [ ! -f go.mod ]; then echo $(ROOT)/vendor/; fi)github.com/caicloud/go-common
+VERSION ?= $(shell git describe --tags --always --dirty)
 
 # Available cpus for compiling, please refer to https://github.com/caicloud/engineering/issues/8186#issuecomment-518656946 for more information.
 CPUS ?= $(shell /bin/bash hack/read_cpus_available.sh)
@@ -111,11 +106,8 @@ test:
 build-local:
 	@for target in $(TARGETS); do                                                      \
 	  go build -v -o $(OUTPUT_DIR)/$${target}                                          \
-	    -ldflags "-s -w -X $(GOCOMMON)/version.version=$(VERSION)                      \
-	      -X $(GOCOMMON)/version.gitRemote=$(GITREMOTE)                                \
-	      -X $(GOCOMMON)/version.gitCommit=$(GITCOMMIT)                                \
-	      -X $(GOCOMMON)/version.gitTreeState=$(GITTREESTATE)                          \
-	      -X $(GOCOMMON)/version.buildDate=$(BUILDDATE)"                               \
+	    -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                      \
+	      -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                     \
 	    $(CMD_DIR)/$${target};                                                         \
 	done
 
@@ -131,11 +123,8 @@ build-linux:
 	  $(BASE_REGISTRY)/golang:1.13.9-stretch                                           \
 	    /bin/bash -c 'for target in $(TARGETS); do                                     \
 	      go build -v -o $(OUTPUT_DIR)/$${target}                                      \
-	        -ldflags "-s -w -X $(GOCOMMON)/version.version=$(VERSION)                  \
-	          -X $(GOCOMMON)/version.gitRemote=$(GITREMOTE)                            \
-	          -X $(GOCOMMON)/version.gitCommit=$(GITCOMMIT)                            \
-	          -X $(GOCOMMON)/version.gitTreeState=$(GITTREESTATE)                      \
-	          -X $(GOCOMMON)/version.buildDate=$(BUILDDATE)"                           \
+	        -ldflags "-s -w -X $(ROOT)/pkg/version.VERSION=$(VERSION)                  \
+	          -X $(ROOT)/pkg/version.REPOROOT=$(ROOT)"                                 \
 	        $(CMD_DIR)/$${target};                                                     \
 	    done'
 
