@@ -60,7 +60,7 @@ CMD_DIR := ./cmd
 # Project output directory.
 OUTPUT_DIR := ./bin
 
-# Build direcotory.
+# Build directory.
 BUILD_DIR := ./build
 
 # Current version of the project.
