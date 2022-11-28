@@ -106,7 +106,7 @@ A brief description of the layout:
 * `OWNERS` contains owners of the project.
 * `README.md` is a detailed description of the project.
 * `bin` is to hold build outputs.
-* `cmd` contains main packages, each subdirecoty of `cmd` is a main package.
+* `cmd` contains main packages, each subdirectory of `cmd` is a main package.
 * `build` contains scripts, yaml files, dockerfiles, etc, to build and package the project.
 * `docs` for project documentations.
 * `hack` contains scripts used to manage this repository, e.g. codegen, installation, verification, etc.
